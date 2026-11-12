@@ -1,6 +1,6 @@
 # Yc::trees
 
-`Yc::trees` 是一个 head-only、分配器感知的 **N 叉树森林**容器。
+`Yc::trees` 是一个 header-only、分配器感知的 **N 叉树森林**容器。
 
 - 节点由容器拥有，节点地址在搬移/排序后保持稳定；
 - 每个节点内嵌兄弟链和孩子链，删除/摘出任意子树都是 O(1) 链操作；
@@ -10,15 +10,25 @@
 
 完整文档见 [doc/trees_readme/trees.md](doc/trees_readme/trees.md)。
 
+## 依赖
+
+本库依赖侵入式双向链表：
+
+- 仓库：[`YandereChan2/intrusive_list`](https://github.com/YandereChan2/intrusive_list)
+- 头文件：[`intrusive_list.h`](https://github.com/YandereChan2/intrusive_list/blob/main/intrusive_list.h)
+- 文档：[`intrusive_list_readme/intrusive_list.md`](https://github.com/YandereChan2/intrusive_list/blob/main/doc/intrusive_list_readme/intrusive_list.md)
+
+本仓库用 git submodule 引用它（`intrusive_list/`），不再内置副本。克隆后需要初始化子模块，
+并把该目录加入头文件搜索路径。
+
 ## 文件
 
 | 文件 | 说明 |
 |---|---|
 | [`trees.h`](trees.h) | 森林实现 |
-| [`intrusive_list.h`](intrusive_list.h) | 依赖：侵入式双向链表 |
 | [`test_trees.cpp`](test_trees.cpp) | 森林自测 |
-| [`test_intrusive_list.cpp`](test_intrusive_list.cpp) | 链表层排序/删除自测 |
 | [`doc/trees_readme/trees.md`](doc/trees_readme/trees.md) | 使用文档 |
+| `intrusive_list/` | 依赖（git submodule） |
 
 ## 快速开始
 
@@ -52,22 +62,34 @@ int main()
 
 ## 构建测试
 
+先取回依赖：
+
+```bat
+git submodule update --init
+```
+
 使用 MSVC（C++23）：
 
 ```bat
-cl /nologo /std:c++latest /EHsc /W4 /utf-8 /I . test_trees.cpp
+cl /nologo /std:c++latest /EHsc /W4 /utf-8 /I . /I intrusive_list test_trees.cpp
 test_trees.exe
+```
 
-cl /nologo /std:c++latest /EHsc /W4 /utf-8 /I . test_intrusive_list.cpp
-test_intrusive_list.exe
+使用 CMake：
+
+```bat
+cmake -S . -B build
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
 ```
 
 预期输出：
 
 ```text
 test_trees: ok
-test_intrusive_list: ok
 ```
+
+链表本身的测试在依赖仓库 [`YandereChan2/intrusive_list`](https://github.com/YandereChan2/intrusive_list) 中。
 
 ## 许可
 

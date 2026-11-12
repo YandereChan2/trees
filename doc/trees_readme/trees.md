@@ -675,29 +675,29 @@ void clear() noexcept;
 
 ## 20. 构建与测试
 
-依赖（侵入式双向链表）以 git submodule 形式放在 `intrusive_list/`，首次构建前先取回：
+依赖（侵入式双向链表）**不固定版本**：CMake 在配置时从 `main` 分支取最新版本
+（见 [CMakeLists.txt](../../CMakeLists.txt)），手动构建时 clone 最新仓库即可。
 
-```bat
-git submodule update --init
-```
-
-仓库中的自测使用 MSVC，需要把头文件目录与依赖目录都加入搜索路径：
-
-```bat
-cl /nologo /std:c++latest /EHsc /W4 /utf-8 /I . /I intrusive_list test_trees.cpp
-
-test_trees.exe
-```
-
-输出为 `test_trees: ok`。
-
-也可以使用 CMake：
+CMake：
 
 ```bat
 cmake -S . -B build
 cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
+
+需要强制更新到依赖的最新版本时，删除 `build` 目录重新配置（或使用 `cmake --fresh`）。
+
+手动构建（MSVC，C++23），需要把头文件目录与依赖目录都加入搜索路径：
+
+```bat
+git clone https://github.com/YandereChan2/intrusive_list.git
+cl /nologo /std:c++latest /EHsc /W4 /utf-8 /I . /I intrusive_list test_trees.cpp
+
+test_trees.exe
+```
+
+输出为 `test_trees: ok`。
 
 链表本身的测试与文档在依赖仓库
 [`YandereChan2/intrusive_list`](https://github.com/YandereChan2/intrusive_list) 中。
